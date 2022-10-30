@@ -10,16 +10,22 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  Select,
   Text,
 } from "@chakra-ui/react";
+
 import api from "../services/api";
 
+import Multiselect from "multiselect-react-dropdown";
+import { useEffect } from "react";
+
 const DestinationForm = () => {
-  const [newUser, setNewUser] = useState({});
+  const [newUser, setNewUser] = useState();
 
   const [country, setCountry] = useState();
   const [city, setCity] = useState();
+
+  const [selectCountry, setSelectCountry] = useState();
+  const [selectCity, setSelectCity] = useState();
 
   const schema = yup.object().shape({
     username: yup.string().required("Este campo é obrigatório"),
@@ -37,26 +43,49 @@ const DestinationForm = () => {
   });
 
   const onSubmitFunction = (data) => {
-    setNewUser(data);
+    setNewUser({
+      username: data.username,
+      email: data.email,
+      tel: data.tel,
+      cpf: data.cpf,
+      country: selectCountry,
+      city: selectCity,
+    });
   };
+  console.log(newUser);
 
-  api
-    .get("/country")
-    .then((response) => {
-      setCountry(response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  useEffect(() => {
+    const getCountryData = async () => {
+      const getCountryName = [];
+      const reqData = await fetch("https://amazon-api.sellead.com/country");
+      const resData = await reqData.json();
 
-  api
-    .get("/city")
-    .then((response) => {
-      setCity(response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      for (let i = 0; i < resData.length; i++) {
+        getCountryName.push(resData[i].name_ptbr);
+      }
+      setCountry(getCountryName);
+    };
+
+    const getCityData = async () => {
+      const getCityName = [];
+      const reqData = await fetch("https://amazon-api.sellead.com/city");
+      const resData = await reqData.json();
+
+      const filterCity = resData.slice(0, 890);
+      for (let i = 0; i < filterCity.length; i++) {
+        let cityName = filterCity[i].name_ptbr;
+        if (cityName !== "" || cityName !== undefined || cityName !== null) {
+          getCityName.push(cityName);
+        } else {
+          console.log("Nome da cidade é nulo");
+        }
+      }
+      setCity(getCityName);
+    };
+
+    getCountryData();
+    getCityData();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmitFunction)}>
@@ -122,23 +151,27 @@ const DestinationForm = () => {
             <Text textAlign="center">Destinos de interesse</Text>
 
             <FormControl isRequired>
-              <FormLabel htmlFor="selectCountry">Nome</FormLabel>
-              <Select>
-                {country &&
-                  country.map((countryName, index) => (
-                    <option key={index}>{countryName.name_ptbr}</option>
-                  ))}
-              </Select>
+              <FormLabel htmlFor="selectCountry">Países</FormLabel>
+              <Multiselect
+                isObject={false}
+                options={country}
+                showCheckbox
+                placeholder="Selecione os países de interesse"
+                avoidHighlightFirstOption
+                onSelect={(e) => setSelectCountry(e)}
+              />
             </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel htmlFor="selectCity">Nome</FormLabel>
-              <Select>
-                {city &&
-                  city.map((cityName, index) => (
-                    <option key={index}>{cityName.name_ptbr}</option>
-                  ))}
-              </Select>
+            <FormControl isRequired mt="70px">
+              <FormLabel htmlFor="selectCity">Cidades</FormLabel>
+              <Multiselect
+                isObject={false}
+                options={city}
+                showCheckbox
+                placeholder="Selecione as cidades de interesse"
+                avoidHighlightFirstOption
+                onSelect={(e) => setSelectCity(e)}
+              />
             </FormControl>
           </Box>
         </Flex>
