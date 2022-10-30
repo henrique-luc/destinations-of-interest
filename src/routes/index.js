@@ -1,6 +1,7 @@
 import { Route, Switch } from "react-router-dom";
 import Home from "../pages/Home";
 import FormPage from "../pages/Form";
+import UserData from "../pages/UserData";
 
 const Routes = () => {
   return (

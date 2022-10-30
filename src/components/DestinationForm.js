@@ -13,10 +13,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import api from "../services/api";
-
 import Multiselect from "multiselect-react-dropdown";
 import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 const DestinationForm = () => {
   const [newUser, setNewUser] = useState();
@@ -41,6 +40,8 @@ const DestinationForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const history = useHistory();
 
   const onSubmitFunction = (data) => {
     setNewUser({
@@ -89,10 +90,25 @@ const DestinationForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmitFunction)}>
-      <Flex flexDir="column" w="70%" m="0 auto">
-        <Flex justifyContent="center" bg="white" borderRadius="10px" p="30px">
-          <Box border="1px solid #404040" p="15px 30px" borderRadius="10px">
-            <Text textAlign="center">Dados Pessoais</Text>
+      <Flex flexDir="column" w="70%" m="0 auto" justifyContent="center">
+        <Flex
+          justifyContent="space-between"
+          bg="white"
+          borderRadius="10px"
+          p="30px"
+        >
+          <Box
+            border="1px solid #404040"
+            p="15px 30px"
+            borderRadius="10px"
+            w="47%"
+            display="flex"
+            flexDir="column"
+            justifyContent="space-around"
+          >
+            <Text textAlign="center" fontSize="lg" fontWeight="bold" mb="20px">
+              Dados Pessoais
+            </Text>
 
             <FormControl isRequired>
               <FormLabel htmlFor="username">Nome</FormLabel>
@@ -147,8 +163,16 @@ const DestinationForm = () => {
             </FormControl>
           </Box>
 
-          <Box border="1px solid #404040" p="15px 30px" borderRadius="10px">
-            <Text textAlign="center">Destinos de interesse</Text>
+          <Box
+            border="1px solid #404040"
+            p="15px 30px"
+            borderRadius="10px"
+            w="47%"
+            h="450px"
+          >
+            <Text textAlign="center" fontSize="lg" fontWeight="bold" mb="20px">
+              Destinos de interesse
+            </Text>
 
             <FormControl isRequired>
               <FormLabel htmlFor="selectCountry">Países</FormLabel>
@@ -162,7 +186,7 @@ const DestinationForm = () => {
               />
             </FormControl>
 
-            <FormControl isRequired mt="70px">
+            <FormControl isRequired mt="20px">
               <FormLabel htmlFor="selectCity">Cidades</FormLabel>
               <Multiselect
                 isObject={false}
@@ -175,7 +199,14 @@ const DestinationForm = () => {
             </FormControl>
           </Box>
         </Flex>
-        <Button type="submit">Enviar</Button>
+        <Button
+          type="submit"
+          w="100px"
+          m="20px auto"
+          boxShadow="5px 5px 0px 3px #000000;"
+        >
+          Enviar
+        </Button>
       </Flex>
     </form>
   );
