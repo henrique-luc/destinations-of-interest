@@ -29,8 +29,18 @@ const DestinationForm = () => {
   const schema = yup.object().shape({
     username: yup.string().required("Este campo é obrigatório"),
     email: yup.string().required("Este campo é obrigatório"),
-    tel: yup.string().required("Este campo é obrigatório"),
-    cpf: yup.string().required("Este campo é obrigatório"),
+    tel: yup
+      .string()
+      .matches(/^[0-9]+$/)
+      .min(11, "Deve possuir 11 digitos")
+      .max(11, "Deve possuir 11 digitos")
+      .required("Este campo é obrigatório"),
+    cpf: yup
+      .string()
+      .matches(/^[0-9]+$/)
+      .min(11, "Deve possuir 11 digitos")
+      .max(11, "Deve possuir 11 digitos")
+      .required("Este campo é obrigatório"),
   });
 
   const {
@@ -44,16 +54,22 @@ const DestinationForm = () => {
   const history = useHistory();
 
   const onSubmitFunction = (data) => {
-    setNewUser({
-      username: data.username,
-      email: data.email,
-      tel: data.tel,
-      cpf: data.cpf,
-      country: selectCountry,
-      city: selectCity,
-    });
+    if (
+      selectCountry !== undefined &&
+      selectCountry.length > 0 &&
+      selectCity !== undefined &&
+      selectCity.length > 0
+    ) {
+      setNewUser({
+        username: data.username,
+        email: data.email,
+        tel: data.tel,
+        cpf: data.cpf,
+        country: selectCountry,
+        city: selectCity,
+      });
+    }
   };
-  console.log(newUser);
 
   useEffect(() => {
     const getCountryData = async () => {
@@ -142,6 +158,7 @@ const DestinationForm = () => {
                 id="tel"
                 type="number"
                 placeholder="(XX) XXXXX-XXXX"
+                maxLength={11}
                 {...register("tel")}
               />
               {errors.tel && (
@@ -183,7 +200,11 @@ const DestinationForm = () => {
                 placeholder="Selecione os países de interesse"
                 avoidHighlightFirstOption
                 onSelect={(e) => setSelectCountry(e)}
+                {...register("country")}
               />
+              {errors.country && (
+                <FormHelperText>{errors.country.message}</FormHelperText>
+              )}
             </FormControl>
 
             <FormControl isRequired mt="20px">
@@ -195,7 +216,11 @@ const DestinationForm = () => {
                 placeholder="Selecione as cidades de interesse"
                 avoidHighlightFirstOption
                 onSelect={(e) => setSelectCity(e)}
+                {...register("city")}
               />
+              {errors.city && (
+                <FormHelperText>{errors.city.message}</FormHelperText>
+              )}
             </FormControl>
           </Box>
         </Flex>
